@@ -5,8 +5,7 @@ import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { Header } from '../header/Header';
 import {GoBook} from 'react-icons/go';
 import {MdOutlineSchool} from 'react-icons/md';
-import {FaRegUserCircle} from 'react-icons/fa';
-import {IoIosInformationCircle} from 'react-icons/io';
+
 
 const Dashboard = () => {
 return(
@@ -35,29 +34,6 @@ return(
                     </div>
                  </div>
              </div>
-             <div className="new-students">
-                    <div className="title">
-                        <h2>New Students</h2>
-                        <a href="#" class="btn">View All</a>
-                    </div>
-                    <table>
-                        <tr>
-                            <th>Profile</th>
-                            <th>Name</th>
-                            <th>option</th>
-                        </tr>
-                        <tr>
-                            <td><FaRegUserCircle className='dashboard__user-icon'/></td>
-                            <td>John Steve Doe</td>
-                            <td><IoIosInformationCircle className='dashboard__user-icon'/></td>
-                        </tr>
-                        <tr>
-                            <td><FaRegUserCircle className='dashboard__user-icon'/></td>
-                            <td>John Steve Doe</td>
-                            <td><IoIosInformationCircle className='dashboard__user-icon'/></td>
-                        </tr>
-                    </table>
-                </div>
          </div>
      </div>
 

@@ -6,12 +6,14 @@ import {
   Routes,
   Route
 } from "react-router-dom";
+import { Students } from './components/students/Students';
 function App() {
   return (
     <Router>
       <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />}/>
+          <Route path="/students" element={<Students />}/>
         </Routes>
   </Router>
   );
