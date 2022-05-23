@@ -1,8 +1,10 @@
 import React from 'react';
 import './login.css';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
+const navigate = useNavigate();
   return (
     <div className='login__container'>
         <div className='form__container'>
@@ -37,7 +39,7 @@ const Login = () => {
           </div>
         </div>
         <div className="d-grid">
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-primary" onClick={()=>navigate('/dashboard')}>
             Submit
           </button>
         </div>
