@@ -22,6 +22,11 @@ export const Sidebar = () => {
         navigate('/students');
     }
 
+    const toLectures=()=>{
+        setActiveNav('/lectures');
+        navigate('/lectures');
+    }
+
   return (
     <div className='side-menu'>
         <div className='sidebar__logo'>
@@ -35,7 +40,7 @@ export const Sidebar = () => {
             <li onClick={toStudents} className= {activeNav === '/students' ? 'active' : ''}>
               <GoBook /> &nbsp; Students
             </li>
-            <li onClick={() => setActiveNav('/lectures')} className={activeNav === '/lectures' ? 'active' : ''}>
+            <li onClick={toLectures} className={activeNav === '/lectures' ? 'active' : ''}>
                 <MdOutlineSchool /> &nbsp; Lectures
             </li>
             <li onClick={() => setActiveNav('#help')} className={activeNav === '#help' ? 'active' : ''}>
