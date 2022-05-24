@@ -33,7 +33,42 @@ return(
                         <MdOutlineSchool className='card-icon'/>
                     </div>
                  </div>
+                 <div className='dashboard__card'>
+                     <div className='box'>
+                         <h1>20</h1>
+                         <h3>Parents</h3>
+                     </div>
+                     <div className="icon-case">
+                        <MdOutlineSchool className='card-icon'/>
+                    </div>
+                 </div>
              </div>
+
+             <div className='noticeboard__container'>
+                <div className="noticeboard">
+                    <div className="title">
+                        <h2>Latest Notice Updates</h2>
+                        <button className= "btn-view">View All</button>
+                    </div>
+                    <table>
+                        <tr>
+                            <th>Date</th>
+                            <th>Notice</th>
+                            <th>Options</th>
+                        </tr>
+                        <tr>
+                            <td>20/06/2020</td>
+                            <td>Recess starts</td>
+                            <td>delete/update</td>
+                        </tr>
+                        <tr>
+                        <td>20/06/2020</td>
+                            <td>Recess starts</td>
+                            <td>delete/update</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
          </div>
      </div>
 

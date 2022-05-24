@@ -25,7 +25,7 @@ export const Sidebar = () => {
     const toLectures=()=>{
         setActiveNav('/lectures');
         navigate('/lectures');
-    }
+    } 
 
   return (
     <div className='side-menu'>

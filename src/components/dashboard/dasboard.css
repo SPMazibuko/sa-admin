@@ -34,7 +34,7 @@
          border-radius: 2rem;
 }
 
-.new-students {
+.noticeboard__container {
         flex: 2;
         background: white;
         min-height: 20vh;
@@ -75,6 +75,11 @@ table td:nth-child(1) img {
         border-bottom: 2px solid #999;
 }
 
-.dashboard__user-icon{
-        font-size: 40px;
-}
+.btn-view {
+        background: var(--color-primary);
+        color: white;
+        padding: 10px 10px;
+        text-align: center;
+        margin-left: 1rem;
+        border-radius: 0.5rem;
+    }

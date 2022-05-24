@@ -3,9 +3,10 @@ import './header.css';
 import {FaSearch} from 'react-icons/fa';
 import {MdNotificationsActive} from 'react-icons/md';
 import {FaUserTie} from 'react-icons/fa';
-
+import { useNavigate } from 'react-router-dom';
 
 export const Header = () => {
+    const navigate = useNavigate();
   return (
     <div className='header__container'>
         <div className='nav'>
@@ -14,9 +15,7 @@ export const Header = () => {
                 <button type='submit'><FaSearch className='search-icon'/></button>
             </div>
             <div className='user'>
-                <a href='#' className='btn'>Add New</a>
                 <MdNotificationsActive className='Notification-icon'/>
-
                 <div className='img-case'>
                     <FaUserTie className='user-icon'/>
                 </div>
