@@ -1,0 +1,49 @@
+.addstudent__container {
+    position: fixed;
+    margin-top: 20vh;
+    margin-left: 20vw;
+    min-height: 80vh;
+    min-width: 80vw;
+    background: #999;
+}
+
+.add-student {
+    flex: 2;
+    background: white;
+    min-height: 20vh;
+    margin: 0 25px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    display: flex;
+    flex-direction: column;
+    margin-top: 5vh;
+    padding:0 1.5rem;
+    border-radius: 0.5rem;
+
+}
+
+.add-student > table {
+    padding: 1.5rem;
+}
+
+.r-1 {
+    padding:0.5rem 1.5rem;
+    margin-top: 2rem;
+}
+.r-2 {
+    padding:0.5rem 1.5rem;
+}
+
+.r-3 {
+    padding:0.5rem 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.parent-btn{
+    background: var(--color-primary);
+    color: white;
+    padding: 10px 10px;
+    text-align: center;
+    margin-left: calc(90%/2);
+    border-radius: 0.5rem;
+    margin-bottom: 3.4rem;
+}

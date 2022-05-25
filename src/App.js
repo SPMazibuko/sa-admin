@@ -9,6 +9,7 @@ import {
 import { Students } from './components/students/Students';
 import { Lectures } from './components/lectures/Lectures';
 import AddStudent from './components/addStudent/AddStudent';
+import AddLecture from './components/addLecture/AddLecture';
 function App() {
   return (
     <Router>
@@ -17,7 +18,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />}/>
           <Route path="/students" element={<Students />}/>
           <Route path="/lectures" element={<Lectures />}/>
-          <Route path='addstudent' element={<AddStudent />} />
+          <Route path='/addstudent' element={<AddStudent />} />
+          <Route path='/addlecture' element={<AddLecture />} />
         </Routes>
   </Router>
   );

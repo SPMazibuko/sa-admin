@@ -4,8 +4,10 @@ import { Sidebar } from '../sidebar/Sidebar';
 import { Header } from '../header/Header';
 import {FaRegUserCircle} from 'react-icons/fa';
 import {IoIosInformationCircle} from 'react-icons/io';
+import { useNavigate } from 'react-router-dom';
 
 export const Lectures = () => {
+    const navigate = useNavigate();
     return(
         <div>
             <Sidebar />
@@ -15,8 +17,7 @@ export const Lectures = () => {
                 <div className="new-students">
                     <div className="title">
                         <h2>Registered Lectures</h2>
-                        <a href="#" className= "btn">View All</a>
-                        <a href="#" className= "btn">Add New Lecture</a>
+                        <button className= "btn-add" onClick={()=>navigate('/addlecture')}>Add Lecture</button>
                     </div>
                     <table>
                         <tr>

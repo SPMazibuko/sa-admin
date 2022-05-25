@@ -9,7 +9,6 @@ import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 
 function AddStudent() {
-    const [academicYear, setAcademicYear] = useState('');
     const [semester, setSemester] = useState(null);
     const [gender, setGender ] = useState('');
     const [faculty, setFaculty ] = useState('');
