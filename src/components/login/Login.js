@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import './login.css';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import {auth} from '../../firebase'
+import {auth} from '../../firebase';
+import { AuthContext } from '../../context/AuthContext'
 
 const Login = () => {
   const [error, setError] = useState(false);
@@ -11,6 +12,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+  const {dispatch} = useContext(AuthContext)
 
 const handleLogin=(event)=>{
   event.preventDefault();
@@ -18,12 +20,12 @@ const handleLogin=(event)=>{
   .then((userCredential) => {
     // Signed in 
     const user = userCredential.user;
-    console.log(user)
+    dispatch({type:"LOGIN", payload: user})
+    navigate('/dashboard');
   })
   .catch((error) => {
     setError(true)
   });
-  //navigate('/dashboard')
 }
   return (
     <div className='login__container'>
