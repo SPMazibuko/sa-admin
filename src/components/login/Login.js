@@ -1,10 +1,30 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './login.css';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { useNavigate } from 'react-router-dom'
+import { signInWithEmailAndPassword } from "firebase/auth";
+import {auth} from '../../firebase'
 
 const Login = () => {
-const navigate = useNavigate();
+  const [error, setError] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+const handleLogin=(event)=>{
+  event.preventDefault();
+  signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(user)
+  })
+  .catch((error) => {
+    setError(true)
+  });
+  //navigate('/dashboard')
+}
   return (
     <div className='login__container'>
         <div className='form__container'>
@@ -16,6 +36,7 @@ const navigate = useNavigate();
             type="email"
             className="form-control"
             placeholder="Enter email"
+            onChange={event=>setEmail(event.target.value)}
           />
         </div>
         <div className="mb-3">
@@ -24,6 +45,7 @@ const navigate = useNavigate();
             type="password"
             className="form-control"
             placeholder="Enter password"
+            onChange={event=>setPassword(event.target.value)}
           />
         </div>
         <div className="mb-3">
@@ -39,9 +61,10 @@ const navigate = useNavigate();
           </div>
         </div>
         <div className="d-grid">
-          <button type="submit" className="btn btn-primary" onClick={()=>navigate('/dashboard')}>
+          <button type="submit" className="btn btn-primary" onClick={handleLogin}>
             Submit
           </button>
+         {error && <span>Wrong Email or password!</span>}
         </div>
         <p className="forgot-password text-right">
           Forgot <a href="#">password?</a>
