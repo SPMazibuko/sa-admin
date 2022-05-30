@@ -21,8 +21,6 @@ function App() {
     return currentUser ? (children) : <Navigate to='/' />;
   }
 
-  console.log(currentUser);
-
   return (
     <Router>
       <Routes>
