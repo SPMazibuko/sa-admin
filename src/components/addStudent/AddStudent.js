@@ -1,17 +1,66 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './addStudent.css';
 import { Sidebar } from '../sidebar/Sidebar';
 import { Header } from '../header/Header';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
+import { doc, serverTimestamp, setDoc } from "firebase/firestore"; 
+import { auth,db,storage } from '../../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
 
 function AddStudent() {
     const [semester, setSemester] = useState(null);
     const [gender, setGender ] = useState('');
     const [faculty, setFaculty ] = useState('');
+    const [fname, setFname] = useState('');
+    const [dob, setDob] = useState('');
+    const [password, setPassword] = useState('');
+    const [studentNum, setStudentNum] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [course, setCourse] = useState('');
+    const [academicYear, setAcademicYear] = useState('');
+    const [file, setFile] = useState("");
+    const [picture, setPicture] = useState("");
+    const [perc, setPerc] = useState(null);
+
+    useEffect(()=>{
+        const uploadFile = () =>{
+            const name = new Date().getTime() + file
+            const storageRef = ref(storage, file.name);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+            
+            uploadTask.on('state_changed', (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+                setPerc(progress);
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                    break;
+                    default:
+                        break;
+                }
+        }, 
+        (error) => {
+            console.log(error);
+        }, 
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setPicture(downloadURL);
+        });
+        });
+        };
+        file && uploadFile();
+    },[file])
 
     const handleChangeSemester = (event) => {
         setSemester(event.target.value);
@@ -24,6 +73,29 @@ function AddStudent() {
       const handleChangeFaculty = (event) => {
         setFaculty(event.target.value);
       };
+
+      const handleAddStudent=async(event)=>{
+        event.preventDefault();
+        try{
+            const response = await createUserWithEmailAndPassword(auth, email, password);
+            await setDoc(doc(db, "students", response.user.uid), {
+                name: fname,
+                email: email,
+                password: password,
+                semester: semester,
+                gender: gender,
+                faculty: faculty,
+                dob: dob,
+                course: course,
+                phone: phone,
+                studentNumber: studentNum,
+                picture: picture,
+                academicDate: serverTimestamp(),
+              });
+        }catch(error){
+            console.log(error);
+        }
+      }
       
   return (
     <div>
@@ -37,93 +109,154 @@ function AddStudent() {
                     </div>
                     <table>
                         <h4>Student Information</h4>
-                        <div className='row-1'>
-                        <TextField
-                            id="academicYear"
-                            label="Academic Year"
-                            type="date"
-                            sx={{ width: 220 }}
-                            InputLabelProps={{
-                            shrink: true,
-                            }}
-                            variant="standard"
-                        />
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                            <InputLabel id="semester">Semester</InputLabel>
-                            <Select
-                                labelId="semester-label"
-                                id="semester"
-                                value={semester}
-                                onChange={handleChangeSemester}
-                                label="Semester"
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={1}>Semester 1</MenuItem>
-                                <MenuItem value={2}>Semester 2</MenuItem>
-                            </Select>
-                        </FormControl>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                <InputLabel id="faculty">Faculty</InputLabel>
-                                    <Select
-                                        labelId="faculty-label"
-                                        id="faculty"
-                                        value={faculty}
-                                        onChange={handleChangeFaculty}
-                                        label="Faculty"
-                                    >
-                                        <MenuItem value="">
-                                            <em>None</em>
-                                        </MenuItem>
-                                        <MenuItem value='H'>Humannities</MenuItem>
-                                        <MenuItem value='ICT'>Information & Communications Technology</MenuItem>
-                                    </Select>
-                            </FormControl>
-                        </div>
-                        <div className='row-2'>
-                            <TextField id="fname" label="First Name" variant="standard" required placeholder='First Name' type='text' />
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <TextField id="lname" label="Last Name" variant="standard" required placeholder='Last Name'/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                <InputLabel id="gender">Gender</InputLabel>
-                                    <Select
-                                        labelId="gender-label"
-                                        id="gender"
-                                        value={gender}
-                                        onChange={handleChangeGender}
-                                        label="Gender"
-                                    >
-                                        <MenuItem value="">
-                                            <em>None</em>
-                                        </MenuItem>
-                                        <MenuItem value={'M'}>Male</MenuItem>
-                                        <MenuItem value={'F'}>Female</MenuItem>
-                                    </Select>
-                            </FormControl>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <TextField
-                                id="dob"
-                                label="Date Of Birth"
-                                type="date"
-                                sx={{ width: 220 }}
-                                InputLabelProps={{
-                                shrink: true,
-                                }}
-                                variant="standard"
+                        <div className="left">
+                            <img
+                                src={
+                                    file ? URL.createObjectURL(file) : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
+                                }
+                                alt=""
                             />
                         </div>
-                        <div className='row-3'>
-                        <TextField id="snum" type='number' label="Student Number" variant="standard" required placeholder='Student Number'/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <TextField id="email" type='email' label="Email Address" variant="standard" required placeholder='Email Address'/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <TextField id="pnumber" type='tel' label="Phone Number" variant="standard" required placeholder='Phone Number'/>
+
+                        <div className="right">
+                            <form autoComplete="off">
+                                <div className="formInput">
+                                    <label htmlFor="file">
+                                        Image: <DriveFolderUploadOutlinedIcon className="icon" />
+                                    </label>
+                                    <input
+                                        type="file"
+                                        id="file"
+                                        onChange={(e) => setFile(e.target.files[0])}
+                                        style={{ display: "none" }}
+                                    />
+                                    <TextField
+                                     id="name" 
+                                     label="Full Name" 
+                                     variant="standard" 
+                                     required 
+                                     placeholder='John Doe'
+                                     onChange={(e)=>setFname(e.target.value)}
+                                     value={fname}
+                                     />
+                                    <br />
+                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 100, paddingRight:2}}>
+                                        <InputLabel id="gender">Gender</InputLabel>
+                                        <Select
+                                            labelId="gender-label"
+                                            id="gender"
+                                            value={gender}
+                                            onChange={handleChangeGender}
+                                            label="Gender"
+                                        >
+                                            <MenuItem value="">
+                                                <em>None</em>
+                                            </MenuItem>
+                                            <MenuItem value={'M'}>Male</MenuItem>
+                                            <MenuItem value={'F'}>Female</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <TextField
+                                        id="dob"
+                                        label="Date Of Birth"
+                                        type="date"
+                                        sx={{ width: 100, marginTop:1 }}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        variant="standard"
+                                        value={dob}
+                                        onChange={(e)=>setDob(e.target.value)}
+                                    />
+                                    <TextField 
+                                    id="password" 
+                                    type='password' 
+                                    label="Password" 
+                                    variant="standard" 
+                                    required 
+                                    placeholder='Password'
+                                    value={password}
+                                    onChange={(e)=>setPassword(e.target.value)}
+                                    />
+                                </div>
+                                <div className="formInput">
+                                <TextField 
+                                    id="course" 
+                                    type='text' 
+                                    label="Course" 
+                                    variant="standard" 
+                                    required 
+                                    placeholder='Course'
+                                    value={course}
+                                    onChange={(e)=>setCourse(e.target.value)}
+                                    />
+                                    <FormControl variant="standard" sx={{ m: 1, width: 120,}}>
+                                        <InputLabel id="semester">Semester</InputLabel>
+                                        <Select
+                                            labelId="semester-label"
+                                            id="semester"
+                                            value={semester}
+                                            onChange={handleChangeSemester}
+                                            label="Semester"
+                                        >       
+                                            <MenuItem value="">
+                                                <em>None</em>
+                                            </MenuItem>
+                                            <MenuItem value="Semester 1">Semester 1</MenuItem>
+                                            <MenuItem value="Semester 2">Semester 2</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <br />
+                                    <FormControl variant="standard" sx={{ m: 1, width: 120, marginTop: -0.2,}}>
+                                        <InputLabel id="faculty">Faculty</InputLabel>
+                                        <Select
+                                            labelId="faculty-label"
+                                            id="faculty"
+                                            value={faculty}
+                                            onChange={handleChangeFaculty}
+                                            label="Faculty"
+                                        >
+                                            <MenuItem value="">
+                                                <em>None</em>
+                                            </MenuItem>
+                                            <MenuItem value='Humannities'>Humannities</MenuItem>
+                                            <MenuItem value='ICT'>ICT</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <TextField 
+                                        id="snum" 
+                                        type='number' 
+                                        label="Student Number" 
+                                        variant="standard" 
+                                        required 
+                                        placeholder='Student Number'
+                                        value={studentNum}
+                                        onChange={(e)=>setStudentNum(e.target.value)}
+                                    />
+                                    <TextField 
+                                    id="email" 
+                                    type='email' 
+                                    label="Email Address" 
+                                    variant="standard" 
+                                    required 
+                                    placeholder='Email Address'
+                                    value={email}
+                                    onChange={(e)=>setEmail(e.target.value)}
+                                    />
+                                    <TextField 
+                                    id="pnumber" 
+                                    type='tel' 
+                                    label="Phone Number" 
+                                    variant="standard" 
+                                    required 
+                                    placeholder='Phone Number'
+                                    value={phone}
+                                    onChange={(e)=>setPhone(e.target.value)}
+                                    />
+                                    <button className='parent-btn' onClick={handleAddStudent} disabled={perc !== null && perc < 100}>Add Student</button>
+                                </div>
+                            </form>
                         </div>
-                        <button className='parent-btn'>Add Student</button>
                     </table>
                 </div>
             </div>
@@ -132,4 +265,4 @@ function AddStudent() {
   )
 }
 
-export default AddStudent
+export default AddStudent;
