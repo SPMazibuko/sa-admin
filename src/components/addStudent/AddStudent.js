@@ -11,7 +11,8 @@ import TextField from '@mui/material/TextField';
 import { doc, serverTimestamp, setDoc } from "firebase/firestore"; 
 import { auth,db,storage } from '../../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { useNavigate } from 'react-router-dom';
 
 function AddStudent() {
     const [semester, setSemester] = useState(null);
@@ -29,6 +30,9 @@ function AddStudent() {
     const [picture, setPicture] = useState("");
     const [perc, setPerc] = useState(null);
 
+    const navigate = useNavigate();
+
+    /*************************** Image Upload to firebase storage *******************/
     useEffect(()=>{
         const uploadFile = () =>{
             const name = new Date().getTime() + file
@@ -54,13 +58,14 @@ function AddStudent() {
             console.log(error);
         }, 
         () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setPicture(downloadURL);
-        });
-        });
-        };
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((downloadURL) => {
+                setPicture(downloadURL);
+            });
+        });};
         file && uploadFile();
     },[file])
+
 
     const handleChangeSemester = (event) => {
         setSemester(event.target.value);
@@ -74,8 +79,10 @@ function AddStudent() {
         setFaculty(event.target.value);
       };
 
+      /********************* Add Student ******************************/
       const handleAddStudent=async(event)=>{
         event.preventDefault();
+        const date = new Date().getFullYear();
         try{
             const response = await createUserWithEmailAndPassword(auth, email, password);
             await setDoc(doc(db, "students", response.user.uid), {
@@ -90,8 +97,9 @@ function AddStudent() {
                 phone: phone,
                 studentNumber: studentNum,
                 picture: picture,
-                academicDate: serverTimestamp(),
+                academicDate: date,
               });
+              navigate(-1);
         }catch(error){
             console.log(error);
         }

@@ -18,7 +18,7 @@ import { Sidebar } from '../sidebar/Sidebar';
 import { Header } from '../header/Header';
 import {IoIosInformationCircle} from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs,doc, deleteDoc } from "firebase/firestore";
 import { db } from '../../firebase';
 
 function PaperComponent(props) {
@@ -44,15 +44,20 @@ export const Students = () => {
       const handleClose = () =>{
           setOpen(false);
       };
-    
-      const handleDelete = () => {
-        setOpen(false);
+    /************ Delete data from firebase **********************************************/
+      const handleDelete = async (id) => {
+        try {
+          await deleteDoc(doc(db, "students", id));
+          setData(data.filter((item) => item.id !== id));
+        } catch (err) {
+          console.log(err);
+        }
       };
 
       const handleEdit = () => {
         setOpen(false);
       };
-
+/*---------------------------- Fetch students data from the database -------------------*/
     useEffect(()=>{
         const fetchData = async()=>{
             let list = []
@@ -69,7 +74,7 @@ export const Students = () => {
         fetchData();
     },[])
 
-    console.log(data);
+
     return(
         <div>
             <Sidebar />
@@ -119,7 +124,7 @@ export const Students = () => {
                                                             </DialogContentText>
                                                         </DialogContent>
                                                         <DialogActions>
-                                                            <Button autoFocus onClick={handleDelete}>DELETE</Button>
+                                                            <Button onClick={()=>{handleDelete(data.id)}}>DELETE</Button>
                                                             <Button onClick={handleEdit}>EDIT</Button>
                                                         </DialogActions>
                                                     </Dialog>
