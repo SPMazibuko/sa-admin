@@ -1,12 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './lectures.css';
 import { Sidebar } from '../sidebar/Sidebar';
 import { Header } from '../header/Header';
 import {FaRegUserCircle} from 'react-icons/fa';
 import {IoIosInformationCircle} from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
-
+import firebase from '../../firebase';
 export const Lectures = () => {
+
     const navigate = useNavigate();
     return(
         <div>

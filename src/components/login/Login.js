@@ -31,9 +31,9 @@ const handleLogin=(event)=>{
     <div className='login__container'>
         <div className='form__container'>
         <form>
-        <h3>Sign In</h3>
+        <h3>ADMIN LOGIN</h3>
         <div className="mb-3">
-          <label>Email address</label>
+          <label>Email Address</label>
           <input
             type="email"
             className="form-control"
@@ -64,7 +64,7 @@ const handleLogin=(event)=>{
         </div>
         <div className="d-grid">
           <button type="submit" className="btn btn-primary" onClick={handleLogin}>
-            Submit
+            SUBMIT
           </button>
          {error && <span>Wrong Email or password!</span>}
         </div>
