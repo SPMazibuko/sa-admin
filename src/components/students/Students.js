@@ -56,20 +56,6 @@ export const Students = () => {
 
 /*---------------------------- Fetch students data from the database -------------------*/
     useEffect(()=>{
-       /* const fetchData = async()=>{
-            let list = []
-            try{
-                const querySnapshot = await getDocs(collection(db, "students"));
-                querySnapshot.forEach((doc) => {
-                    list.push({id: doc.id, ...doc.data()});
-                });
-                setData(list);
-            }catch(e){
-                console.log(e);
-            }
-        }
-        fetchData();*/
-
         const unsub = onSnapshot(collection(db, "students"), (snapShot) =>{
             let list = [];
             snapShot.docs.forEach(doc=>{
@@ -103,6 +89,8 @@ export const Students = () => {
                                         <TableCell className="tableCell">Profile</TableCell>
                                         <TableCell className="tableCell">Student Number</TableCell>
                                         <TableCell className="tableCell">Student Name</TableCell>
+                                        <TableCell className="tableCell">Email</TableCell>
+                                        <TableCell className="tableCell">Phone Number</TableCell>
                                         <TableCell className="tableCell">Options</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -116,6 +104,8 @@ export const Students = () => {
                                             </TableCell>
                                             <TableCell className="tableCell">{data.studentNumber}</TableCell>
                                             <TableCell className="tableCell">{data.name}</TableCell>
+                                            <TableCell className="tableCell">{data.email}</TableCell>
+                                            <TableCell className="tableCell">{data.phone}</TableCell>
                                             <TableCell className="tableCell">
                                                 <div>
                                                     <IoIosInformationCircle className='dashboard__user-icon' onClick={handleClickOpen}  style={{ cursor: 'pointer' }}/>

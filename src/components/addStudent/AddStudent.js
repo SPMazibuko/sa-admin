@@ -98,6 +98,7 @@ function AddStudent() {
                 studentNumber: studentNum,
                 picture: picture,
                 academicDate: date,
+                timestamp: serverTimestamp(),
               });
               navigate(-1);
         }catch(error){

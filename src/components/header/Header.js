@@ -4,9 +4,18 @@ import {FaSearch} from 'react-icons/fa';
 import {MdNotificationsActive} from 'react-icons/md';
 import {FaUserTie} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import {auth,} from '../../firebase';
 
 export const Header = () => {
     const navigate = useNavigate();
+
+    // handle logout
+  const handleLogout = () => {
+    auth.logout.then(() => {
+        navigate('/');
+    })
+  }
+
   return (
     <div className='header__container'>
         <div className='nav'>
@@ -20,7 +29,7 @@ export const Header = () => {
                     <FaUserTie className='user-icon'/>
                 </div>
             </div>
-            <button type='submit' className='btn-logout'>Logout</button>
+            <button type='submit' className='btn-logout' onClick={handleLogout}>Logout</button>
         </div>
         </div>
   )
