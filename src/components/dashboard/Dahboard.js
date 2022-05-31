@@ -26,7 +26,7 @@ return(
                  </div>
                  <div className='dashboard__card'>
                      <div className='box'>
-                         <h1>20</h1>
+                         <h1>40</h1>
                          <h3>Lectures</h3>
                      </div>
                      <div className="icon-case">
@@ -35,8 +35,8 @@ return(
                  </div>
                  <div className='dashboard__card'>
                      <div className='box'>
-                         <h1>20</h1>
-                         <h3>Parents</h3>
+                         <h1>90%</h1>
+                         <h3>Overall School Attendance</h3>
                      </div>
                      <div className="icon-case">
                         <MdOutlineSchool className='card-icon'/>

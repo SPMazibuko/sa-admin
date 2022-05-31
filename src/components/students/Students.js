@@ -18,7 +18,7 @@ import { Sidebar } from '../sidebar/Sidebar';
 import { Header } from '../header/Header';
 import {IoIosInformationCircle} from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs,doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs,doc, deleteDoc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from '../../firebase';
 
 function PaperComponent(props) {
@@ -54,12 +54,9 @@ export const Students = () => {
         }
       };
 
-      const handleEdit = () => {
-        setOpen(false);
-      };
 /*---------------------------- Fetch students data from the database -------------------*/
     useEffect(()=>{
-        const fetchData = async()=>{
+       /* const fetchData = async()=>{
             let list = []
             try{
                 const querySnapshot = await getDocs(collection(db, "students"));
@@ -71,7 +68,20 @@ export const Students = () => {
                 console.log(e);
             }
         }
-        fetchData();
+        fetchData();*/
+
+        const unsub = onSnapshot(collection(db, "students"), (snapShot) =>{
+            let list = [];
+            snapShot.docs.forEach(doc=>{
+                list.push({id: doc.id, ...doc.data()});
+            });
+            setData(list);
+        },(error)=>{
+            console.log(error)
+        });
+        return ()=>{
+            unsub();
+        }
     },[])
 
 
@@ -116,16 +126,16 @@ export const Students = () => {
                                                         aria-labelledby="draggable-dialog-title"
                                                     >
                                                         <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-                                                            Manage Student
+                                                            DELETE STUDENT
                                                         </DialogTitle>
                                                         <DialogContent>
                                                             <DialogContentText>
-                                                                Delete or edit student details.
+                                                                Are you sure you want to delete the Student?
                                                             </DialogContentText>
                                                         </DialogContent>
                                                         <DialogActions>
                                                             <Button onClick={()=>{handleDelete(data.id)}}>DELETE</Button>
-                                                            <Button onClick={handleEdit}>EDIT</Button>
+                                                            <Button onClick={handleClose}>BACK</Button>
                                                         </DialogActions>
                                                     </Dialog>
                                                 </div>
