@@ -9,9 +9,12 @@ import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore"; 
-import { auth,db,storage } from '../../firebase';
+import { auth,db,storage, dbs} from '../../firebase';
+import {uid} from 'uid';
+import { ref, set } from "firebase/database";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
+import { uploadBytesResumable, getDownloadURL } from "firebase/storage"
+import { useNavigate } from 'react-router-dom';
 
 function AddLecture() {
     const [fname, setFname] = useState('');
@@ -27,7 +30,9 @@ function AddLecture() {
     const [picture, setPicture] = useState("");
     const [perc, setPerc] = useState(null);
 
-    useEffect(()=>{
+    const navigate = useNavigate();
+
+   /* useEffect(()=>{
         const uploadFile = () =>{
             const name = new Date().getTime() + file
             const storageRef = ref(storage, file.name);
@@ -56,7 +61,7 @@ function AddLecture() {
             setPicture(downloadURL);
         });});};
         file && uploadFile();
-    },[file])
+    },[file])*/
 
   const handleChangeFaculty = (event) => {
     setFaculty(event.target.value);
@@ -70,7 +75,7 @@ function AddLecture() {
       e.preventDefault();
         try{
             const response = await createUserWithEmailAndPassword(auth, email, password);
-            await setDoc(doc(db, "lecture", response.user.uid), {
+            await set(ref(dbs, 'lectures/' + response.user.uid), {
                 name: fname,
                 email: email,
                 password: password,
@@ -83,6 +88,7 @@ function AddLecture() {
                 picture: picture,
                 registrationDate: serverTimestamp(),
               });
+              navigate(-1);
         }catch(error){
             console.log(error);
         }
@@ -100,31 +106,20 @@ function AddLecture() {
                 </div>
                 <table>
                     <h4>Lecture Information</h4>
-                    <div className="left">
+                    {/*<div className="left">
                             <img
                                 src={
                                     file ? URL.createObjectURL(file) : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
                                 }
                                 alt=""
-                            />
-                        </div>
+                            
+                        </div>/>*/}
                         <div className="right">
                             <form autoComplete="off">
                                 <div className="formInput">
-                                    <label htmlFor="file">
-                                        Image: <DriveFolderUploadOutlinedIcon className="icon" />
-                                    </label>
                                     <input
-                                        type="file"
-                                        id="file"
-                                        onChange={(e) => setFile(e.target.files[0])}
-                                        style={{ display: "none" }}
-                                    />
-
-                                    <TextField
                                      id="name" 
-                                     label="Full Name" 
-                                     variant="standard" 
+                                     type="text" 
                                      required 
                                      placeholder='John Doe'
                                      onChange={(e)=>setFname(e.target.value)}
@@ -171,11 +166,10 @@ function AddLecture() {
                                     />
                                 </div>{/*form input div*/}
                                 <div className="formInput">
-                                <TextField 
+                                <input 
                                     id="course" 
                                     type='text' 
                                     label="Course" 
-                                    variant="standard" 
                                     required 
                                     placeholder='Course'
                                     value={course}
@@ -241,3 +235,13 @@ function AddLecture() {
 }
 
 export default AddLecture;
+
+/*<label htmlFor="file">
+                                        Image: <DriveFolderUploadOutlinedIcon className="icon" />
+                                    </label>
+                                    <input
+                                        type="file"
+                                        id="file"
+                                        onChange={(e) => setFile(e.target.files[0])}
+                                        style={{ display: "none" }}
+                                    />*/

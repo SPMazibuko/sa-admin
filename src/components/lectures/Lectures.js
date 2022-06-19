@@ -19,7 +19,8 @@ import Draggable from 'react-draggable';
 import {IoIosInformationCircle} from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import { collection, doc, deleteDoc, onSnapshot} from "firebase/firestore";
-import { db } from '../../firebase';
+import { auth,db,storage,dbs } from '../../firebase';
+import { ref, set, onValue } from "firebase/database";
 
 function PaperComponent(props) {
     return (
@@ -57,7 +58,18 @@ export const Lectures = () => {
       };
 
       /*---------------------------- Fetch students data from the database -------------------*/
-    useEffect(()=>{
+      useEffect(()=>{
+        onValue(ref(dbs, 'lectures'), (snapshot) => {
+            const lecture = snapshot.val();
+            const lectureList = []
+            for(let id in lecture){
+                lectureList.push(lecture[id])
+            }
+            setData(lectureList);
+        })
+    },[])
+   
+      /* useEffect(()=>{
          const unsub = onSnapshot(collection(db, "lecture"), (snapShot) =>{
              let list = [];
              snapShot.docs.forEach(doc=>{
@@ -70,7 +82,7 @@ export const Lectures = () => {
          return ()=>{
              unsub();
          }
-     },[]);
+     },[]);*/
 
 console.log(data);
     return(
@@ -88,7 +100,6 @@ console.log(data);
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell className="tableCell">Profile</TableCell>
                                         <TableCell className="tableCell">Employee Number</TableCell>
                                         <TableCell className="tableCell">Lecture Name</TableCell>
                                         <TableCell className="tableCell">Faculty</TableCell>
@@ -98,11 +109,6 @@ console.log(data);
                                 <TableBody>
                                     {data.map((data) => (
                                         <TableRow key={data.id}>
-                                            <TableCell className="tableCell">
-                                                <div className="cellWrapper">
-                                                    <img src={data.picture} alt="" className="image" />
-                                                </div>
-                                            </TableCell>
                                             <TableCell className="tableCell">{data.employeeNumber}</TableCell>
                                             <TableCell className="tableCell">{data.name}</TableCell>
                                             <TableCell className="tableCell">{data.faculty}</TableCell>

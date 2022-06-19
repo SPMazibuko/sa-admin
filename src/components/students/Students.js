@@ -19,7 +19,8 @@ import { Header } from '../header/Header';
 import {IoIosInformationCircle} from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs,doc, deleteDoc, onSnapshot, setDoc } from "firebase/firestore";
-import { db } from '../../firebase';
+import { auth,db,storage,dbs } from '../../firebase';
+import { ref, set, onValue } from "firebase/database";
 
 function PaperComponent(props) {
     return (
@@ -55,7 +56,7 @@ export const Students = () => {
       };
 
 /*---------------------------- Fetch students data from the database -------------------*/
-    useEffect(()=>{
+    /*useEffect(()=>{
         const unsub = onSnapshot(collection(db, "students"), (snapShot) =>{
             let list = [];
             snapShot.docs.forEach(doc=>{
@@ -68,8 +69,18 @@ export const Students = () => {
         return ()=>{
             unsub();
         }
-    },[])
+    },[])*/
 
+    useEffect(()=>{
+        onValue(ref(dbs, 'students'), (snapshot) => {
+            const student = snapshot.val();
+            const studentList = []
+            for(let id in student){
+                studentList.push(student[id])
+            }
+            setData(studentList);
+        })
+    },[])
 
     return(
         <div>
@@ -86,7 +97,6 @@ export const Students = () => {
                             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell className="tableCell">Profile</TableCell>
                                         <TableCell className="tableCell">Student Number</TableCell>
                                         <TableCell className="tableCell">Student Name</TableCell>
                                         <TableCell className="tableCell">Email</TableCell>
@@ -97,11 +107,7 @@ export const Students = () => {
                                 <TableBody>
                                     {data.map((data) => (
                                         <TableRow key={data.id}>
-                                            <TableCell className="tableCell">
-                                                <div className="cellWrapper">
-                                                    <img src={data.picture} alt="" className="image" />
-                                                </div>
-                                            </TableCell>
+                        
                                             <TableCell className="tableCell">{data.studentNumber}</TableCell>
                                             <TableCell className="tableCell">{data.name}</TableCell>
                                             <TableCell className="tableCell">{data.email}</TableCell>

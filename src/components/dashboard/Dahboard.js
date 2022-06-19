@@ -11,7 +11,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -22,7 +21,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import {GoBook} from 'react-icons/go';
 import {MdOutlineSchool} from 'react-icons/md';
 import { collection, getDocs, query,doc, onSnapshot, deleteDoc, addDoc} from 'firebase/firestore';
-import { db, auth } from '../../firebase';
+import { auth,db,storage,dbs } from '../../firebase';
+import { ref, set, onValue, push, remove, child} from "firebase/database";
+import {uid} from 'uid';
 
 const Dashboard = () => {
     const [totalStudents, setTotalStudents] = useState(0);
@@ -30,12 +31,12 @@ const Dashboard = () => {
     const [open, setOpen] = useState(false);
     const [notice, setNotice] = useState("");
     const [data, setData] = useState([]);
-    const [uid, setUid]=useState(null);
+    const [userId, setUserId]=useState(null);
 
         useEffect(()=>{
             auth.onAuthStateChanged(user=>{
                 if(user){
-                    setUid(user.uid);
+                    setUserId(user.uid);
                 }
             })
         },[])
@@ -55,21 +56,38 @@ const Dashboard = () => {
 
       /********************* ADD NOTICE ********************************/
       const handleAddNotice = async(e)=>{
-          e.preventDefault();
+        e.preventDefault();
+        const uuid = uid();
+        const noticeRef = ref(dbs, 'notice');
+        const newNoticeRef = push(noticeRef);
             try{
-                await addDoc(collection(db, "notice"), {
-                date: today,
-                notice: notice,
-                userId: uid, 
-              });
+                await set(newNoticeRef, {
+                    date: today,
+                    notice: notice,
+                    userId: userId,
+                    uuid
+                });
               setOpen(false);
+              setNotice("")
         }catch(error){
             console.log(error);
         }
       }
 
+     
       /*********************** Retrieve Notice *************************/
     useEffect(()=>{
+        onValue(ref(dbs, 'notice'), (snapshot) => {
+            const notice = snapshot.val();
+            const noticeList = []
+            for(let id in notice){
+                noticeList.push(notice[id])
+            }
+            setData(noticeList);
+        })
+    },[])
+
+      /*useEffect(()=>{
          const unsub = onSnapshot(collection(db, "notice"), (snapShot) =>{
              let list = [];
              snapShot.docs.forEach(doc=>{
@@ -82,17 +100,26 @@ const Dashboard = () => {
          return ()=>{
              unsub();
          }
-     },[])
+     },[])*/
 
      console.log(data);
      /****************************************** Handle Delete Notice ***************************** */
-  const handleDelete = async(id)=>{
-    try {
+  const handleDelete = (id)=>{
+    try{
+        if(window.confirm("are you sure that you want to delete the Notice?")){
+            remove(ref(dbs, 'notice/', id))
+    }}catch(e){
+        console.log(e);
+    }
+    /*remove(ref(dbs, "notice", id));
+    setData(data.filter((item) => item.id !== id));*/
+
+    /*try {
         await deleteDoc(doc(db, "notice", id));
         setData(data.filter((item) => item.id !== id));
       } catch (err) {
         console.log(err);
-      }
+      }*/
   }
 
    /****************************************** Handle Delete Notice ***************************** */
@@ -105,7 +132,7 @@ const Dashboard = () => {
             //const lastMonth = new Date(new Date().setMonth(today.getMonth() - 1));
             //const twoMonthsBack = new Date(new Date().setMonth(today.getMonth() - 2));
             const studentsQuery = query(collection(db, "students"));
-
+            
             const studentsData = await getDocs(studentsQuery);
             setTotalStudents(studentsData.docs.length);
             
@@ -144,7 +171,7 @@ return(
                  </div>
                  <div className='dashboard__card'>
                      <div className='box'>
-                         <h1>90%</h1>
+                         <h1>0</h1>
                          <h3>School Attendance</h3>
                      </div>
                      <div className="icon-case">
@@ -164,13 +191,12 @@ return(
                                 <DialogContentText>
                                     Create a new notice for the facility.
                                 </DialogContentText>
-                                <TextField
+                                <input
                                     autoFocus
                                     margin="dense"
                                     id="notice"
                                     type="text"
                                     fullWidth
-                                    variant="standard"
                                     onChange={(e)=>setNotice(e.target.value)}
                                     value={notice}
                                 />
@@ -185,24 +211,41 @@ return(
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
+                                    <TableCell className="tableCell">No.</TableCell>
                                     <TableCell className="tableCell">Date</TableCell>
                                     <TableCell className="tableCell">Notice</TableCell>
                                     <TableCell className="tableCell">Options</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {data.map((data)=>(
+                                {Object.keys(data).map((id, index) =>{
+                                    return(
+                                        <TableRow key={id}>
+                                        <TableCell className="tableCell" >{index +1}</TableCell>
+                                        <TableCell className="tableCell" >{data[id].date}</TableCell>
+                                        <TableCell className="tableCell">{data[id].notice}</TableCell>
+                                        <TableCell className="tableCell">
+                                            <div>
+                                                <EditIcon className='dashboard__user-icon' onClick={()=>{handleEdit(id)}} style={{ cursor: 'pointer', color: 'green'}}/>
+                                                <DeleteForeverIcon className='dashboard__user-icon' onClick={()=>{handleDelete(id)}} style={{ cursor: 'pointer', color: 'red'}}/>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                    )
+                                })
+
+                                }
+                                {/*data.map((data)=>(
                                     <TableRow key={data.id}>
                                         <TableCell>{data.date}</TableCell>
                                         <TableCell className="tableCell">{data.notice}</TableCell>
                                         <TableCell className="tableCell">
                                             <div>
-                                                <EditIcon className='dashboard__user-icon' onClick={()=>{handleEdit(data.id)}} style={{ cursor: 'pointer', color: 'blue' }}/>
                                                 <DeleteForeverIcon className='dashboard__user-icon' onClick={()=>{handleDelete(data.id)}} style={{ cursor: 'pointer', color: 'red'}}/>
                                             </div>
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                ))*/}
                             </TableBody>
                         </Table>
                     </TableContainer>

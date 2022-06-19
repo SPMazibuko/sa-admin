@@ -9,9 +9,11 @@ import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUpload
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import { doc, serverTimestamp, setDoc } from "firebase/firestore"; 
-import { auth,db,storage } from '../../firebase';
+import { auth,db,storage,dbs } from '../../firebase';
+import {uid} from 'uid';
+import { ref, set } from "firebase/database";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useNavigate } from 'react-router-dom';
 
 function AddStudent() {
@@ -25,7 +27,6 @@ function AddStudent() {
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [course, setCourse] = useState('');
-    const [academicYear, setAcademicYear] = useState('');
     const [file, setFile] = useState("");
     const [picture, setPicture] = useState("");
     const [perc, setPerc] = useState(null);
@@ -33,7 +34,7 @@ function AddStudent() {
     const navigate = useNavigate();
 
     /*************************** Image Upload to firebase storage *******************/
-    useEffect(()=>{
+   /*useEffect(()=>{
         const uploadFile = () =>{
             const name = new Date().getTime() + file
             const storageRef = ref(storage, file.name);
@@ -65,8 +66,7 @@ function AddStudent() {
         });};
         file && uploadFile();
     },[file])
-
-
+*/
     const handleChangeSemester = (event) => {
         setSemester(event.target.value);
       };
@@ -81,6 +81,32 @@ function AddStudent() {
 
       /********************* Add Student ******************************/
       const handleAddStudent=async(event)=>{
+        event.preventDefault();
+        const date = new Date().getFullYear();
+        try{
+            const response = await createUserWithEmailAndPassword(auth, email, password);
+            await set(ref(dbs, 'students/' + response.user.uid), {
+                name: fname,
+                email: email,
+                password: password,
+                semester: semester,
+                gender: gender,
+                faculty: faculty,
+                dob: dob,
+                course: course,
+                phone: phone,
+                studentNumber: studentNum,
+                attandance: false,
+                //picture: picture,
+                academicDate: date,
+                timestamp: serverTimestamp(),
+              });
+              navigate(-1);
+        }catch(error){
+            console.log(error);
+        }
+      }
+      /*const handleAddStudent=async(event)=>{
         event.preventDefault();
         const date = new Date().getFullYear();
         try{
@@ -104,7 +130,7 @@ function AddStudent() {
         }catch(error){
             console.log(error);
         }
-      }
+      }*/
       
   return (
     <div>
@@ -118,31 +144,21 @@ function AddStudent() {
                     </div>
                     <table>
                         <h4>Student Information</h4>
-                        <div className="left">
+                       {/* <div className="left">
                             <img
                                 src={
                                     file ? URL.createObjectURL(file) : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
                                 }
                                 alt=""
                             />
-                        </div>
+                            </div>*/}
 
                         <div className="right">
                             <form autoComplete="off">
                                 <div className="formInput">
-                                    <label htmlFor="file">
-                                        Image: <DriveFolderUploadOutlinedIcon className="icon" />
-                                    </label>
                                     <input
-                                        type="file"
-                                        id="file"
-                                        onChange={(e) => setFile(e.target.files[0])}
-                                        style={{ display: "none" }}
-                                    />
-                                    <TextField
+                                    type="text"
                                      id="name" 
-                                     label="Full Name" 
-                                     variant="standard" 
                                      required 
                                      placeholder='John Doe'
                                      onChange={(e)=>setFname(e.target.value)}
@@ -189,11 +205,9 @@ function AddStudent() {
                                     />
                                 </div>
                                 <div className="formInput">
-                                <TextField 
+                                <input
                                     id="course" 
                                     type='text' 
-                                    label="Course" 
-                                    variant="standard" 
                                     required 
                                     placeholder='Course'
                                     value={course}
@@ -215,8 +229,7 @@ function AddStudent() {
                                             <MenuItem value="Semester 2">Semester 2</MenuItem>
                                         </Select>
                                     </FormControl>
-                                    <br />
-                                    <FormControl variant="standard" sx={{ m: 1, width: 120, marginTop: -0.2,}}>
+                                    <FormControl variant="standard" sx={{ m: 1, width: 120,}}>
                                         <InputLabel id="faculty">Faculty</InputLabel>
                                         <Select
                                             labelId="faculty-label"
